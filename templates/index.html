@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VTU SGPA Calculator</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #6366f1;
+            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --glass: rgba(255, 255, 255, 0.95);
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --border-radius: 16px;
+            --shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--glass);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 40px;
+            backdrop-filter: blur(10px);
+            margin-top: 20px;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 { text-align: center; color: #111827; margin-bottom: 30px; font-weight: 800; letter-spacing: -0.5px; }
+        
+        .selectors {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .form-group { margin-bottom: 5px; }
+        
+        label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 0.9rem; color: var(--text-muted); }
+
+        select, button {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            background-color: #fff;
+        }
+
+        select:focus, select:hover {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: var(--text-main);
+            border: 2px solid #e5e7eb;
+        }
+        
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        th, td {
+            padding: 14px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        th { background-color: #f9fafb; font-weight: 700; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; }
+        
+        td input, td select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.95rem;
+        }
+
+        td input:focus, td select:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        .result-box {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(to right, #f0f9ff, #e0f2fe);
+            border-radius: 12px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .result-box h2 { margin: 0; color: var(--primary); font-size: 2.5rem; }
+        .result-box p { margin: 5px 0 0; color: var(--text-muted); }
+
+        .action-bar {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .action-bar button { flex: 1; min-width: 120px; }
+        
+        /* Animations */
+        .row-enter { animation: rowEnter 0.3s ease-out; }
+        @keyframes rowEnter { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+        
+        /* Responsive */
+        @media (max-width: 600px) {
+            .container { padding: 20px; }
+            h1 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>VTU SGPA Calculator</h1>
+
+    <!-- Step 1: Scheme/Branch/Sem Selection -->
+    <div class="selectors">
+        <div class="form-group">
+            <label for="scheme">Scheme</label>
+            <select id="scheme">
+                <option value="">Select</option>
+                <option value="2018">2018 Scheme</option>
+                <option value="2020">2020 Scheme</option>
+                <option value="2021">2021 Scheme</option>
+                <option value="2022">2022 Scheme</option>
+                <option value="2025">2025 Scheme</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="branch">Branch</label>
+            <select id="branch" disabled>
+                <option value="">Select Scheme first</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="sem">Semester</label>
+            <select id="sem">
+                <option value="1">1st Sem</option>
+                <option value="2">2nd Sem</option>
+                <option value="3">3rd Sem</option>
+                <option value="4">4th Sem</option>
+                <option value="5">5th Sem</option>
+                <option value="6">6th Sem</option>
+                <option value="7">7th Sem</option>
+                <option value="8">8th Sem</option>
+            </select>
+        </div>
+    </div>
+
+    <button id="loadSubjectsBtn" class="btn-primary">Load Subjects</button>
+
+    <!-- Step 2: Table -->
+    <table id="subjectsTable">
+        <thead>
+            <tr>
+                <th style="width: 15%">Code</th>
+                <th style="width: 45%">Subject Name</th>
+                <th style="width: 15%">Credits</th>
+                <th style="width: 15%">Grade</th>
+                <th style="width: 10%">Action</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+            <!-- Rows will be injected here -->
+        </tbody>
+    </table>
+
+    <div class="action-bar">
+        <button id="addRowBtn" class="btn-secondary">+ Add Subject</button>
+        <button id="resetBtn" class="btn-secondary">Reset</button>
+        <button id="calcBtn" class="btn-primary">Calculate SGPA</button>
+    </div>
+
+    <!-- Step 3: Result -->
+    <div id="resultBox" class="result-box">
+        <p>Your SGPA is</p>
+        <h2 id="sgpaValue">0.00</h2>
+    </div>
+</div>
+
+<script>
+    const schemeSel = document.getElementById('scheme');
+    const branchSel = document.getElementById('branch');
+    const semSel = document.getElementById('sem');
+    const tableBody = document.getElementById('tableBody');
+    const resultBox = document.getElementById('resultBox');
+
+    // 1. Update Branches when Scheme changes
+    schemeSel.addEventListener('change', async function() {
+        branchSel.innerHTML = '<option value="">Loading...</option>';
+        branchSel.disabled = true;
+        
+        try {
+            const response = await fetch('/get_branches', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ scheme: this.value })
+            });
+            const data = await response.json();
+            
+            branchSel.innerHTML = '<option value="">Select Branch</option>';
+            data.branches.forEach(br => {
+                const opt = document.createElement('option');
+                opt.value = br;
+                opt.textContent = br;
+                branchSel.appendChild(opt);
+            });
+            branchSel.disabled = false;
+        } catch (err) {
+            console.error('Error fetching branches', err);
+            branchSel.innerHTML = '<option value="">Error</option>';
+        }
+    });
+
+    // 2. Load Subjects
+    document.getElementById('loadSubjectsBtn').addEventListener('click', async function() {
+        const scheme = schemeSel.value;
+        const branch = branchSel.value;
+        const sem = semSel.value;
+
+        if(!scheme || !branch || !sem) {
+            alert("Please select Scheme, Branch, and Semester.");
+            return;
+        }
+
+        try {
+            const response = await fetch('/get_subjects', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ scheme, branch, sem })
+            });
+            const data = await response.json();
+            
+            tableBody.innerHTML = ''; // Clear existing
+            if(data.subjects.length > 0) {
+                data.subjects.forEach(sub => addRow(sub.code, sub.name, sub.credits));
+            } else {
+                addRow('', '', 4); // Add empty row if no data found for manual entry
+                alert("No preset subjects found for this combination. You can add them manually.");
+            }
+            
+            resultBox.style.display = 'none';
+        } catch (err) {
+            console.error(err);
+        }
+    });
+
+    // 3. Add Row (Manual)
+    document.getElementById('addRowBtn').addEventListener('click', function() {
+        addRow('', '', 4);
+    });
+
+    function addRow(code, name, credits, grade = '') {
+        const tr = document.createElement('tr');
+        tr.classList.add('row-enter');
+        tr.innerHTML = `
+            <td><input type="text" class="sub-code" value="${code}"></td>
+            <td><input type="text" class="sub-name" value="${name}"></td>
+            <td><input type="number" class="sub-credits" value="${credits}" min="0" max="10"></td>
+            <td>
+                <select class="sub-grade">
+                    <option value="">--</option>
+                    <option value="S" ${grade === 'S' ? 'selected' : ''}>S</option>
+                    <option value="A" ${grade === 'A' ? 'selected' : ''}>A</option>
+                    <option value="B" ${grade === 'B' ? 'selected' : ''}>B</option>
+                    <option value="C" ${grade === 'C' ? 'selected' : ''}>C</option>
+                    <option value="D" ${grade === 'D' ? 'selected' : ''}>D</option>
+                    <option value="E" ${grade === 'E' ? 'selected' : ''}>E</option>
+                    <option value="F" ${grade === 'F' ? 'selected' : ''}>F</option>
+                </select>
+            </td>
+            <td><button class="btn-secondary" onclick="this.parentElement.parentElement.remove()" style="padding:5px; background:#fee2e2; color:#b91c1c;">✕</button></td>
+        `;
+        tableBody.appendChild(tr);
+    }
+
+    // 4. Calculate
+    document.getElementById('calcBtn').addEventListener('click', async function() {
+        const rows = tableBody.querySelectorAll('tr');
+        const subjects = [];
+
+        rows.forEach(row => {
+            const credits = row.querySelector('.sub-credits').value;
+            const grade = row.querySelector('.sub-grade').value;
+            subjects.push({ credits, grade });
+        });
+
+        try {
+            const response = await fetch('/calculate', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ subjects })
+            });
+            const data = await response.json();
+            
+            document.getElementById('sgpaValue').textContent = data.sgpa;
+            resultBox.style.display = 'block';
+            resultBox.scrollIntoView({ behavior: 'smooth' });
+        } catch(err) {
+            alert('Calculation error');
+        }
+    });
+
+    // 5. Reset
+    document.getElementById('resetBtn').addEventListener('click', function() {
+        tableBody.innerHTML = '';
+        schemeSel.value = '';
+        branchSel.innerHTML = '<option value="">Select Scheme first</option>';
+        branchSel.disabled = true;
+        semSel.value = '1';
+        resultBox.style.display = 'none';
+    });
+</script>
+
+</body>
+</html>
