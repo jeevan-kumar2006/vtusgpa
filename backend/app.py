@@ -43,25 +43,6 @@ def serve_static(filename):
 def calculate_sgpa():
     """
     Calculate SGPA based on provided subjects
-    
-    Expected JSON payload:
-    {
-        "subjects": [
-            {"name": "Subject 1", "credits": 3, "grade": "A"},
-            {"name": "Subject 2", "credits": 4, "grade": "B"},
-            ...
-        ]
-    }
-    
-    Returns:
-    {
-        "sgpa": 7.85,
-        "total_credits": 20,
-        "credit_points": 157,
-        "subject_count": 5,
-        "grade_class": "Very Good",
-        "success": true
-    }
     """
     try:
         data = request.get_json()
@@ -77,4 +58,99 @@ def calculate_sgpa():
         if not subjects or len(subjects) == 0:
             return jsonify({
                 'success': False,
-                'error
+                'error': 'No subjects provided.'
+            }), 400
+        
+        total_credits = 0
+        total_credit_points = 0
+        valid_subjects = 0
+        
+        for subject in subjects:
+            credits = subject.get('credits', 0)
+            grade = subject.get('grade', '').upper()
+            
+            if credits and grade and grade in GRADE_POINTS:
+                total_credits += credits
+                total_credit_points += credits * GRADE_POINTS[grade]
+                valid_subjects += 1
+        
+        if total_credits == 0:
+            return jsonify({
+                'success': False,
+                'error': 'No valid subjects with credits found.'
+            }), 400
+        
+        sgpa = total_credit_points / total_credits
+        
+        # Determine grade classification
+        if sgpa >= 9:
+            grade_class = 'Outstanding'
+        elif sgpa >= 8:
+            grade_class = 'Excellent'
+        elif sgpa >= 7:
+            grade_class = 'Very Good'
+        elif sgpa >= 6:
+            grade_class = 'Good'
+        elif sgpa >= 5:
+            grade_class = 'Satisfactory'
+        else:
+            grade_class = 'Needs Improvement'
+        
+        return jsonify({
+            'success': True,
+            'sgpa': round(sgpa, 2),
+            'total_credits': total_credits,
+            'credit_points': total_credit_points,
+            'subject_count': valid_subjects,
+            'grade_class': grade_class
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': f'Server error: {str(e)}'
+        }), 500
+
+
+@app.route('/api/grades', methods=['GET'])
+def get_grade_info():
+    """Return grade information"""
+    return jsonify({
+        'grades': [
+            {'grade': 'O', 'points': 10, 'range': '90-100%', 'description': 'Outstanding'},
+            {'grade': 'S', 'points': 9, 'range': '80-89%', 'description': 'Superior'},
+            {'grade': 'A', 'points': 8, 'range': '70-79%', 'description': 'Excellent'},
+            {'grade': 'B', 'points': 7, 'range': '60-69%', 'description': 'Very Good'},
+            {'grade': 'C', 'points': 6, 'range': '50-59%', 'description': 'Good'},
+            {'grade': 'D', 'points': 5, 'range': '45-49%', 'description': 'Satisfactory'},
+            {'grade': 'F', 'points': 0, 'range': 'Below 45%', 'description': 'Fail'}
+        ]
+    })
+
+
+@app.route('/api/health', methods=['GET'])
+def health_check():
+    """Health check endpoint"""
+    return jsonify({
+        'status': 'healthy',
+        'scheme': 'VTU 2022',
+        'version': '1.0.0'
+    })
+
+
+if __name__ == '__main__':
+    # Get port from environment variable (for Codespaces) or default to 5000
+    port = int(os.environ.get('PORT', 5000))
+    
+    # Debug mode for development
+    debug = os.environ.get('FLASK_DEBUG', 'True').lower() == 'true'
+    
+    # Simplified print statement to avoid syntax errors
+    print("-------------------------------------------")
+    print(" VTU SGPA Calculator - Backend Started ")
+    print(f" Scheme: VTU 2022")
+    print(f" Running on: http://localhost:{port}")
+    print(" Press Ctrl+C to quit")
+    print("-------------------------------------------")
+    
+    app.run(host='0.0.0.0', port=port, debug=debug)
