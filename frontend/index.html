@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VTU SGPA Calculator | 2022 Scheme</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-container">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+        <div class="gradient-orb orb-3"></div>
+        <div class="grid-overlay"></div>
+    </div>
+
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <span class="logo-icon">VTU</span>
+                <span class="logo-text">SGPA Calculator</span>
+            </div>
+            <div class="scheme-badge">2022 Scheme</div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Calculator Card -->
+            <div class="calculator-card">
+                <div class="card-header">
+                    <h1 class="title">Calculate Your SGPA</h1>
+                    <p class="subtitle">Enter your subject credits and grades for accurate results</p>
+                </div>
+
+                <!-- Selection Controls -->
+                <div class="controls-section">
+                    <div class="control-group">
+                        <label for="department">Department</label>
+                        <select id="department" class="select-input">
+                            <option value="">Select Department</option>
+                            <option value="CSE">Computer Science & Engineering</option>
+                            <option value="ISE">Information Science & Engineering</option>
+                            <option value="ECE">Electronics & Communication</option>
+                            <option value="EEE">Electrical & Electronics</option>
+                            <option value="ME">Mechanical Engineering</option>
+                            <option value="CV">Civil Engineering</option>
+                            <option value="AIML">AI & Machine Learning</option>
+                            <option value="DS">Data Science</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="semester">Semester</label>
+                        <select id="semester" class="select-input">
+                            <option value="">Select Semester</option>
+                            <option value="1">1st Semester</option>
+                            <option value="2">2nd Semester</option>
+                            <option value="3">3rd Semester</option>
+                            <option value="4">4th Semester</option>
+                            <option value="5">5th Semester</option>
+                            <option value="6">6th Semester</option>
+                            <option value="7">7th Semester</option>
+                            <option value="8">8th Semester</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Subjects Container -->
+                <div class="subjects-section">
+                    <div class="subjects-header">
+                        <h2>Subjects</h2>
+                        <button type="button" id="addSubjectBtn" class="btn btn-add">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                            Add Subject
+                        </button>
+                    </div>
+                    
+                    <div id="subjectsContainer" class="subjects-container">
+                        <!-- Subjects will be dynamically added here -->
+                    </div>
+                </div>
+
+                <!-- Calculate Button -->
+                <button type="button" id="calculateBtn" class="btn btn-calculate">
+                    <span class="btn-text">Calculate SGPA</span>
+                    <span class="btn-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </span>
+                </button>
+
+                <!-- Results Section -->
+                <div id="resultsSection" class="results-section hidden">
+                    <div class="result-card">
+                        <div class="result-label">Your SGPA</div>
+                        <div id="sgpaValue" class="result-value">0.00</div>
+                        <div id="resultGrade" class="result-grade"></div>
+                    </div>
+                    <div class="result-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Total Credits</span>
+                            <span id="totalCredits" class="detail-value">0</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Credit Points</span>
+                            <span id="creditPoints" class="detail-value">0</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Subjects</span>
+                            <span id="subjectCount" class="detail-value">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grade Reference Card -->
+            <aside class="reference-card">
+                <h3>Grade Reference</h3>
+                <div class="grade-table">
+                    <div class="grade-row grade-header">
+                        <span>Grade</span>
+                        <span>Points</span>
+                        <span>Range</span>
+                    </div>
+                    <div class="grade-row"><span class="grade-badge grade-o">O</span><span>10</span><span>90-100%</span></div>
+                    <div class="grade-row"><span class="grade-badge grade-s">S</span><span>9</span><span>80-89%</span></div>
+                    <div class="grade-row"><span class="grade-badge grade-a">A</span><span>8</span><span>70-79%</span></div>
+                    <div class="grade-row"><span class="grade-badge grade-b">B</span><span>7</span><span>60-69%</span></div>
+                    <div class="grade-row"><span class="grade-badge grade-c">C</span><span>6</span><span>50-59%</span></div>
+                    <div class="grade-row"><span class="grade-badge grade-d">D</span><span>5</span><span>45-49%</span></div>
+                    <div class="grade-row"><span class="grade-badge grade-f">F</span><span>0</span><span>Below 45%</span></div>
+                </div>
+                <div class="formula-section">
+                    <h4>Formula</h4>
+                    <code>SGPA = Σ(Ci × GPi) / Σ(Ci)</code>
+                </div>
+            </aside>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>VTU SGPA Calculator for 2022 Scheme | For reference only</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
